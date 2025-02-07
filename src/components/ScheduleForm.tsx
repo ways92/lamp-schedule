@@ -9,7 +9,6 @@ import { ScheduleFormProps } from '@/types/schedule';
 import { DATE_FORMAT } from '@/config/dateConfig';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-import moment from 'moment';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
