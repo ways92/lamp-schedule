@@ -1,4 +1,4 @@
 {
   "installCommand": "npm install --legacy-peer-deps",
-  "buildCommand": "npm install --legacy-peer-deps && prisma generate && next build"
+  "buildCommand": "npm install --legacy-peer-deps && npx prisma generate && next build"
 }
