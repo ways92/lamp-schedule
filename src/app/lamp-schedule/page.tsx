@@ -7,19 +7,16 @@ import { useSchedule } from '@/hooks/useSchedule';
 import ScheduleForm from '@/components/ScheduleForm';
 import ScheduleTable from '@/components/ScheduleTable';
 import SkeletonLoading from '@/components/SkeletonLoading';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense } from 'react';
 import '@/config/dateConfig';
 
 export default function LampSchedule() {
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const {
     schedule,
     editKey,
     editDate,
-    errorDateEdit,
     loading,
     isPending,
-    setErrorDateEdit,
     setEditDate,
     addNewSchedule,
     removeSchedule,
@@ -51,8 +48,6 @@ export default function LampSchedule() {
             editKey={editKey}
             editDate={editDate}
             setEditDate={setEditDate}
-            setErrorDateEdit={setErrorDateEdit}
-            errorDateEdit={errorDateEdit}
             loading={isPending}
           />
         </div>
