@@ -18,6 +18,7 @@ export default function LampSchedule() {
     editDate,
     errorDateEdit,
     loading,
+    isPending,
     setErrorDateEdit,
     setEditDate,
     addNewSchedule,
@@ -27,15 +28,7 @@ export default function LampSchedule() {
     cancelEdit,
   } = useSchedule();
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsInitialLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (isInitialLoading) {
+  if (loading) {
     return (
       <ConfigProvider locale={idID}>
         <SkeletonLoading />
@@ -48,7 +41,7 @@ export default function LampSchedule() {
       <Suspense fallback={<SkeletonLoading />}>
         <div className="p-2 max-w-5xl mx-auto pt-4">
           <h1 className="text-xl font-bold mb-2">Jadwal Lampu Naga</h1>
-          <ScheduleForm addSchedule={addNewSchedule} loading={loading} />
+          <ScheduleForm addSchedule={addNewSchedule} loading={isPending} />
           <ScheduleTable
             schedule={schedule}
             onEdit={startEdit}
@@ -60,7 +53,7 @@ export default function LampSchedule() {
             setEditDate={setEditDate}
             setErrorDateEdit={setErrorDateEdit}
             errorDateEdit={errorDateEdit}
-            loading={loading}
+            loading={isPending}
           />
         </div>
       </Suspense>
