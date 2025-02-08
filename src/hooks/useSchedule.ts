@@ -11,35 +11,43 @@ export const useSchedule = () => {
   const [editDate, setEditDate] = useState<Dayjs | null>(null);
   const [errorDateEdit, setErrorDateEdit] = useState("");
   const [isPending, startTransition] = useTransition();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchSchedules = async () => {
-      const schedules = await getSchedules();
+      setLoading( true );
       
-      // Konversi kembali dari ISO string ke Dayjs di Client
-      const formattedSchedules = schedules.map((schedule) => ({
-        ...schedule,
-        startLive: dayjs(schedule.startLive),
-        endLive: dayjs(schedule.endLive),
-        startOff: dayjs(schedule.startOff),
-        endOff: dayjs(schedule.endOff),
-        createdAt: dayjs(schedule.createdAt),
-        updatedAt: dayjs(schedule.updatedAt),
-      }));
+      try {
+        const schedules = await getSchedules();
+        
+        const formattedSchedules = schedules.map((schedule) => ({
+          ...schedule,
+          startLive: dayjs(schedule.startLive),
+          endLive: dayjs(schedule.endLive),
+          startOff: dayjs(schedule.startOff),
+          endOff: dayjs(schedule.endOff),
+          createdAt: dayjs(schedule.createdAt),
+          updatedAt: dayjs(schedule.updatedAt),
+        }));
 
-      setSchedule(formattedSchedules);
+        setSchedule(formattedSchedules);
+      } catch (error) {
+        console.error("Error fetching schedules:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchSchedules();
   }, []);
 
   const addNewSchedule = async (startLive: Dayjs) => {
-    if (!startLive) return;
+    if ( !startLive ) return;
+    
     startTransition(async () => {
       await addSchedule(startLive.toISOString());
       const data = await getSchedules();
 
-      // Pastikan semua data dikonversi kembali ke Dayjs
       const formattedData = data.map((schedule) => ({
         ...schedule,
         startLive: dayjs(schedule.startLive),
@@ -59,7 +67,6 @@ export const useSchedule = () => {
       await deleteSchedule(id);
       const data = await getSchedules();
 
-      // Pastikan semua data dikonversi kembali ke Dayjs
       const formattedData = data.map((schedule) => ({
         ...schedule,
         startLive: dayjs(schedule.startLive),
@@ -76,7 +83,7 @@ export const useSchedule = () => {
 
   const startEdit = (record: Schedule) => {
     setEditKey(record.id);
-    setEditDate(dayjs(record.startLive)); // Pastikan data tetap dalam bentuk Dayjs
+    setEditDate(dayjs(record.startLive));
   };
 
   const saveEdit = async (id: string, newStartLive: Dayjs) => {
@@ -89,7 +96,6 @@ export const useSchedule = () => {
       await updateSchedule(id, newStartLive.toISOString());
       const data = await getSchedules();
 
-      // Pastikan semua data dikonversi kembali ke Dayjs
       const formattedData = data.map((schedule) => ({
         ...schedule,
         startLive: dayjs(schedule.startLive),
@@ -118,7 +124,8 @@ export const useSchedule = () => {
     editKey,
     editDate,
     errorDateEdit,
-    loading: isPending,
+    loading,
+    isPending,
     setErrorDateEdit,
     setEditDate,
     addNewSchedule,
