@@ -87,10 +87,6 @@ export const useSchedule = () => {
   };
 
   const saveEdit = async (id: string, newStartLive: Dayjs) => {
-    if (!newStartLive) {
-      setErrorDateEdit("Tanggal harus diisi");
-      return;
-    }
 
     startTransition(async () => {
       await updateSchedule(id, newStartLive.toISOString());

@@ -26,16 +26,8 @@ export const getSchedules = async () => {
 
 // Tambah schedule baru
 export async function addSchedule(startLive: string) {
-  console.log('Received startLive from frontend:', startLive);
-
-  // Konversi ke UTC (pastikan waktu tetap akurat)
   const startDateUTC = dayjs.utc(startLive);
-
-  // Konversi ke WIB tanpa kehilangan zona waktu
   const startDateWIB = startDateUTC.tz('Asia/Jakarta');
-
-  console.log('Parsed startLive (WIB):', startDateWIB.format());
-  console.log('Parsed startLive (UTC):', startDateWIB.utc().format());
 
   const endLive = startDateWIB.add(19, 'days').utc();
   const startOff = endLive.add(1, 'day').utc();
@@ -43,7 +35,7 @@ export async function addSchedule(startLive: string) {
 
   await prisma.schedule.create({
     data: {
-      startLive: startDateWIB.toDate(), // Simpan sebagai UTC
+      startLive: startDateWIB.toDate(),
       endLive: endLive.toDate(),
       startOff: startOff.toDate(),
       endOff: endOff.toDate(),
@@ -58,18 +50,9 @@ export async function deleteSchedule(id: string) {
 
 // Update schedule
 export async function updateSchedule(id: string, startLive: string) {
-  console.log('Received startLive from frontend:', startLive);
-
-  // Konversi ke UTC (pastikan waktu tetap akurat)
   const startDateUTC = dayjs.utc(startLive);
 
-  // Konversi ke WIB tanpa kehilangan zona waktu
   const startDateWIB = startDateUTC.tz('Asia/Jakarta');
-
-  console.log('Parsed startLive (WIB):', startDateWIB.format());
-  console.log('Parsed startLive (UTC):', startDateWIB.utc().format());
-
-  // Hitung tanggal lainnya berdasarkan startDateWIB
   const endLive = startDateWIB.add(19, 'days').utc();
   const startOff = endLive.add(1, 'day').utc();
   const endOff = startOff.add(9, 'days').utc();
@@ -77,7 +60,7 @@ export async function updateSchedule(id: string, startLive: string) {
   await prisma.schedule.update({
     where: { id },
     data: {
-      startLive: startDateWIB.toDate(), // Simpan sebagai UTC
+      startLive: startDateWIB.toDate(),
       endLive: endLive.toDate(),
       startOff: startOff.toDate(),
       endOff: endOff.toDate(),

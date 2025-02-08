@@ -24,7 +24,5 @@ export interface ScheduleTableProps {
   editKey: string | null;
   editDate: Dayjs | null;
   setEditDate: (date: Dayjs | null) => void;
-  setErrorDateEdit: (key: string) => void;
-  errorDateEdit: string;
   loading: boolean;
 }
