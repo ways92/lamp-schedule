@@ -22,7 +22,7 @@ export const ScheduleForm = ({ addSchedule, loading }: ScheduleFormProps) => {
       .validateFields()
       .then((values) => {
         const selectedDate = dayjs(values.date).tz("Asia/Jakarta").startOf("day");
-        const utcDate = selectedDate.hour(12).utc();
+        const utcDate = selectedDate.hour( 12 ).utc();        
 
         addSchedule(utcDate);
         setNewDate(null);

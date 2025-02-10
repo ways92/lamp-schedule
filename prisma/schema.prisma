@@ -15,11 +15,11 @@ datasource db {
 
 model Schedule {
   id        String   @id @default(uuid())
-  startLive DateTime
-  endLive   DateTime
-  startOff  DateTime
-  endOff    DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  startLive DateTime @db.Timestamptz
+  endLive   DateTime @db.Timestamptz
+  startOff  DateTime @db.Timestamptz
+  endOff    DateTime @db.Timestamptz
+  createdAt DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @updatedAt @db.Timestamptz
 }
 

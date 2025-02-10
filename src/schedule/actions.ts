@@ -10,7 +10,11 @@ dayjs.extend(timezone);
 
 // Ambil semua data schedule
 export const getSchedules = async () => {
-  const schedules = await prisma.schedule.findMany();
+  const schedules = await prisma.schedule.findMany({
+    orderBy: {
+      createdAt: 'asc', 
+    },
+  });
   
   return schedules.map((schedule) => ({
     ...schedule,
@@ -26,19 +30,23 @@ export const getSchedules = async () => {
 
 // Tambah schedule baru
 export async function addSchedule(startLive: string) {
-  const startDateUTC = dayjs.utc(startLive);
-  const startDateWIB = startDateUTC.tz('Asia/Jakarta');
+  const startDateWIB = dayjs.tz(startLive, "Asia/Jakarta");
+  
+  const endLiveWIB = startDateWIB.add(19, "days");
+  const startOffWIB = endLiveWIB.add(1, "day");
+  const endOffWIB = startOffWIB.add(9, "days");
 
-  const endLive = startDateWIB.add(19, 'days').utc();
-  const startOff = endLive.add(1, 'day').utc();
-  const endOff = startOff.add(9, 'days').utc();
+  const startDateUTC = startDateWIB.utc();
+  const endLiveUTC = endLiveWIB.utc();
+  const startOffUTC = startOffWIB.utc();
+  const endOffUTC = endOffWIB.utc();
 
   await prisma.schedule.create({
     data: {
-      startLive: startDateWIB.toDate(),
-      endLive: endLive.toDate(),
-      startOff: startOff.toDate(),
-      endOff: endOff.toDate(),
+      startLive: startDateUTC.toDate(),
+      endLive: endLiveUTC.toDate(),
+      startOff: startOffUTC.toDate(),
+      endOff: endOffUTC.toDate(),
     },
   });
 }
