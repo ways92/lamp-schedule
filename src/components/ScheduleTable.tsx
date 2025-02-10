@@ -1,6 +1,6 @@
 'use client';
 
-import { Table, Button, DatePicker, Form } from 'antd';
+import { Table, Button, DatePicker, Form, Space } from 'antd';
 import { CloseSquareFilled, EditFilled, SaveFilled, DeleteFilled } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -10,6 +10,9 @@ import { Schedule, ScheduleTableProps } from '@/types/schedule';
 import { DATE_FORMAT } from '@/config/dateConfig';
 import Image from "next/image";
 import { useEffect } from 'react';
+import ColumnGroup from 'antd/es/table/ColumnGroup';
+import Column from 'antd/es/table/Column';
+import { alignCenterFormat } from '@/utils/ComponentUtils';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -42,117 +45,20 @@ export const ScheduleTable = ({
       await form.validateFields();
       onSave(id, editDate!);
     } catch (error) {
-      return
+      return;
     }
-  };
-    
-  const columns = [
-    {
-      title: 'No',
-      dataIndex: 'index',
-      key: 'index',
-      render: (_: any, __: any, index: number) => index + 1,
-    },
-    {
-      title: 'Awal Hidup',
-      dataIndex: 'startLive',
-      key: 'startLive',
-      render: (_: any, record: Schedule) =>
-        editKey === record.id ? (
-          <Form form={form}>
-            <Form.Item
-              name="date"
-              rules={[{ type: "object" as const, required: true, message: "Tanggal harus diisi!" }]}
-              validateTrigger={["onChange", "onBlur"]}
-              className="mb-0"
-            >
-              <DatePicker
-                value={editDate ?? dayjs(editDate).startOf("day").hour(12).utc()}
-                onChange={(date) => setEditDate(date ? dayjs(date).startOf("day").hour(12).utc(): null)}
-                inputReadOnly
-                format={DATE_FORMAT}
-                locale={idID.DatePicker}
-                className="border w-full"
-                disabled={loading}
-              />
-            </Form.Item>
-          </Form>
-        ) : (
-          dayjs.utc(record.startLive).tz("Asia/Jakarta").format(DATE_FORMAT)
-        ),
-    },
-    {
-      title: 'Akhir Hidup',
-      dataIndex: 'endLive',
-      key: 'endLive',
-      render: (date: any) => dayjs.utc(date).tz('Asia/Jakarta').format(DATE_FORMAT),
-    },
-    {
-      title: 'Awal Mati',
-      dataIndex: 'startOff',
-      key: 'startOff',
-      render: (date: any) => dayjs.utc(date).tz('Asia/Jakarta').format(DATE_FORMAT),
-    },
-    {
-      title: 'Akhir Mati',
-      dataIndex: 'endOff',
-      key: 'endOff',
-      render: (date: any) => dayjs.utc(date).tz('Asia/Jakarta').format(DATE_FORMAT),
-    },
-    {
-      title: 'Aksi',
-      key: 'action',
-      width: 115, 
-      render: (_: any, record: Schedule) =>
-        editKey === record.id ? (
-          <div className='flex'>
-            <Button 
-              onClick={() => handleSave( record.id )}
-              type="primary" 
-              className="mr-2"
-              loading={loading}
-            >
-              {!loading && <SaveFilled className='text-xl -mx-2' />}
-            </Button>
-            <Button 
-              onClick={onCancel} 
-              danger
-              disabled={loading}
-            >
-              {!loading && <CloseSquareFilled className='text-xl -mx-2' />}
-            </Button>
-          </div>
-        ) : (
-          <div className='flex'>
-            <Button 
-              onClick={() => onEdit(record)} 
-              type="default" 
-              className="mr-2"
-              disabled={loading}
-            >
-              {!loading && <EditFilled className='text-xl -mx-2' />}
-            </Button>
-            <Button 
-              danger 
-              onClick={() => onDelete(record.id)}
-              loading={loading}
-            >
-              {!loading && <DeleteFilled className='text-xl -mx-2' />}
-            </Button>
-          </div>
-        ),
-    },
-  ];
+  }; 
 
   return (
     <Table
       className="mt-5"
-      columns={columns}
+      size="small"
       dataSource={schedule}
       pagination={false}
       rowKey="id"
       loading={loading}
-      scroll={{ x: 800 }}
+      scroll={{ x: 1200 }}
+      bordered
       locale={{
         emptyText: (
           <div className="flex flex-col items-center justify-center">
@@ -167,7 +73,75 @@ export const ScheduleTable = ({
           </div>
         ),
       }}
-    />
+    >
+      <Column align="center" title="No" dataIndex="index" key="index" render={(_, __, index) => index + 1} />
+      
+      <ColumnGroup title="Hidup (20 Hari)">
+        <Column title={alignCenterFormat( "Awal" )} dataIndex="startLive" key="startLive" render={(_, record: Schedule) =>
+          editKey === record.id ? (
+            <Form form={form}>
+              <Form.Item
+                name="date"
+                rules={[{ type: "object" as const, required: true, message: "Tanggal harus diisi!" }]}
+                validateTrigger={["onChange", "onBlur"]}
+                className="mb-0"
+              >
+                <DatePicker
+                  value={editDate ?? dayjs(editDate).startOf("day").hour(12).utc()}
+                  onChange={(date) => setEditDate(date ? dayjs(date).startOf("day").hour(12).utc() : null)}
+                  inputReadOnly
+                  format={DATE_FORMAT}
+                  locale={idID.DatePicker}
+                  className="border w-full"
+                  disabled={loading}
+                />
+              </Form.Item>
+            </Form>
+          ) : (
+            dayjs.utc(record.startLive).tz("Asia/Jakarta").format(DATE_FORMAT)
+          )
+        } />
+        <Column title={alignCenterFormat( "Ujung" )} dataIndex="endLive" key="endLive" render={(date) => dayjs.utc(date).tz("Asia/Jakarta").format(DATE_FORMAT)} />
+      </ColumnGroup>
+      
+      <ColumnGroup title="Istirahat (10 Hari)">
+        <Column title={alignCenterFormat( "Awal" )} dataIndex="startOff" key="startOff" render={(date) => dayjs.utc(date).tz("Asia/Jakarta").format(DATE_FORMAT)} />
+        <Column title={alignCenterFormat( "Ujung" )} dataIndex="endOff" key="endOff" render={(date) => dayjs.utc(date).tz("Asia/Jakarta").format(DATE_FORMAT)} />
+      </ColumnGroup>
+
+      <ColumnGroup title="Perkiraan Panen (50-55 Hari)">
+        <Column title={alignCenterFormat( "Awal" )} dataIndex="endOff" key="endOff" render={(date) => dayjs.utc(date).tz("Asia/Jakarta").add(50, "days").format(DATE_FORMAT)} />
+        <Column title={alignCenterFormat( "Ujung" )}  dataIndex="endOff" key="endOff" render={( date ) => dayjs.utc( date ).tz( "Asia/Jakarta" ).add( 55, "days" ).format( DATE_FORMAT )} />
+      </ColumnGroup>
+      
+      <Column
+        align="center"
+        title="Aksi"
+        key="action"
+        width={95}
+        render={(_, record: Schedule) =>
+          editKey === record.id ? (
+            <Space>
+              <Button onClick={() => handleSave(record.id)} type="primary" loading={loading}>
+                {!loading && <SaveFilled className='text-xl -mx-2' />}
+              </Button>
+              <Button onClick={onCancel} danger disabled={loading}>
+                {!loading && <CloseSquareFilled className='text-xl -mx-2' />}
+              </Button>
+            </Space>
+          ) : (
+            <Space>
+              <Button onClick={() => onEdit(record)} type="default" disabled={loading}>
+                {!loading && <EditFilled className='text-xl -mx-2' />}
+              </Button>
+              <Button danger onClick={() => onDelete(record.id)} loading={loading}>
+                {!loading && <DeleteFilled className='text-xl -mx-2' />}
+              </Button>
+            </Space>
+          )
+        }
+      />
+    </Table>
   );
 };
 
