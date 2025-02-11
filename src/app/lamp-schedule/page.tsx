@@ -57,7 +57,7 @@ export default function LampSchedule()
       <ConfigProvider locale={idID}>
         <Suspense fallback={<SkeletonLoading />}>
           <div className="p-2 max-w-7xl mx-auto pt-4">
-            <h1 className="text-xl font-bold mb-2">Jadwal Lampu Naga</h1>
+            <h1 className="relative text-xl font-bold mb-2">Jadwal Lampu Naga</h1>
             <ScheduleForm addSchedule={addNewSchedule} loading={isPending} />
             <ScheduleTable
               schedule={schedule}
