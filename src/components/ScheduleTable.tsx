@@ -14,10 +14,10 @@ import ColumnGroup from 'antd/es/table/ColumnGroup';
 import Column from 'antd/es/table/Column';
 import { alignCenterFormat } from '@/utils/ComponentUtils';
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
+dayjs.extend( utc );
+dayjs.extend( timezone );
 
-export const ScheduleTable = ({
+export const ScheduleTable = ( {
   schedule,
   onEdit,
   onDelete,
@@ -27,27 +27,30 @@ export const ScheduleTable = ({
   editDate,
   setEditDate,
   loading
-}: ScheduleTableProps) => {
+}: ScheduleTableProps ) =>
+{
   const [form] = Form.useForm();
 
-  useEffect(() => {
-    if (editKey) {
-      const currentRecord = schedule.find((item) => item.id === editKey);
-      if (currentRecord) {
-        setEditDate(dayjs(currentRecord.startLive));
-        form.setFieldsValue({ date: dayjs(currentRecord.startLive) });
+  useEffect( () =>
+  {
+    if ( editKey ) {
+      const currentRecord = schedule.find( ( item ) => item.id === editKey );
+      if ( currentRecord ) {
+        setEditDate( dayjs( currentRecord.startLive ) );
+        form.setFieldsValue( { date: dayjs( currentRecord.startLive ) } );
       }
     }
-  }, [editKey, form, schedule]);
+  }, [editKey, form, schedule] );
 
-  const handleSave = async (id: string) => {
+  const handleSave = async ( id: string ) =>
+  {
     try {
       await form.validateFields();
-      onSave(id, editDate!);
-    } catch (error) {
+      onSave( id, editDate! );
+    } catch ( error ) {
       return;
     }
-  }; 
+  };
 
   return (
     <Table
@@ -74,10 +77,10 @@ export const ScheduleTable = ({
         ),
       }}
     >
-      <Column align="center" title="No" dataIndex="index" key="index" render={(_, __, index) => index + 1} />
-      
+      <Column align="center" title="No" dataIndex="index" key="index" render={( _, __, index ) => index + 1} />
+
       <ColumnGroup title="Hidup (20 Hari)">
-        <Column title={alignCenterFormat( "Awal" )} dataIndex="startLive" key="startLive" render={(_, record: Schedule) =>
+        <Column title={alignCenterFormat( "Awal" )} dataIndex="startLive" key="startLive" render={( _, record: Schedule ) =>
           editKey === record.id ? (
             <Form form={form}>
               <Form.Item
@@ -87,8 +90,8 @@ export const ScheduleTable = ({
                 className="mb-0"
               >
                 <DatePicker
-                  value={editDate ?? dayjs(editDate).startOf("day").hour(12).utc()}
-                  onChange={(date) => setEditDate(date ? dayjs(date).startOf("day").hour(12).utc() : null)}
+                  value={editDate ?? dayjs( editDate ).startOf( "day" ).hour( 12 ).utc()}
+                  onChange={( date ) => setEditDate( date ? dayjs( date ).startOf( "day" ).hour( 12 ).utc() : null )}
                   inputReadOnly
                   format={DATE_FORMAT}
                   locale={idID.DatePicker}
@@ -98,43 +101,63 @@ export const ScheduleTable = ({
               </Form.Item>
             </Form>
           ) : (
-            dayjs.utc(record.startLive).tz("Asia/Jakarta").format(DATE_FORMAT)
+            dayjs.utc( record.startLive ).tz( "Asia/Jakarta" ).format( DATE_FORMAT )
           )
         } />
-        <Column title={alignCenterFormat( "Ujung" )} dataIndex="endLive" key="endLive" render={(date) => dayjs.utc(date).tz("Asia/Jakarta").format(DATE_FORMAT)} />
+        <Column title={alignCenterFormat( "Ujung" )} dataIndex="endLive" key="endLive" render={( date ) => dayjs.utc( date ).tz( "Asia/Jakarta" ).format( DATE_FORMAT )} />
       </ColumnGroup>
-      
+
       <ColumnGroup title="Istirahat (10 Hari)">
-        <Column title={alignCenterFormat( "Awal" )} dataIndex="startOff" key="startOff" render={(date) => dayjs.utc(date).tz("Asia/Jakarta").format(DATE_FORMAT)} />
-        <Column title={alignCenterFormat( "Ujung" )} dataIndex="endOff" key="endOff" render={(date) => dayjs.utc(date).tz("Asia/Jakarta").format(DATE_FORMAT)} />
+        <Column title={alignCenterFormat( "Awal" )} dataIndex="startOff" key="startOff" render={( date ) => dayjs.utc( date ).tz( "Asia/Jakarta" ).format( DATE_FORMAT )} />
+        <Column title={alignCenterFormat( "Ujung" )} dataIndex="endOff" key="endOff" render={( date ) => dayjs.utc( date ).tz( "Asia/Jakarta" ).format( DATE_FORMAT )} />
       </ColumnGroup>
 
       <ColumnGroup title="Perkiraan Panen (50-55 Hari)">
-        <Column title={alignCenterFormat( "Awal" )} dataIndex="endOff" key="endOff" render={(date) => dayjs.utc(date).tz("Asia/Jakarta").add(50, "days").format(DATE_FORMAT)} />
-        <Column title={alignCenterFormat( "Ujung" )}  dataIndex="endOff" key="endOff" render={( date ) => dayjs.utc( date ).tz( "Asia/Jakarta" ).add( 55, "days" ).format( DATE_FORMAT )} />
+        <Column title={alignCenterFormat( "Awal" )} dataIndex="endOff" key="endOff" render={( date ) => dayjs.utc( date ).tz( "Asia/Jakarta" ).add( 50, "days" ).format( DATE_FORMAT )} />
+        <Column title={alignCenterFormat( "Ujung" )} dataIndex="endOff" key="endOff" render={( date ) => dayjs.utc( date ).tz( "Asia/Jakarta" ).add( 55, "days" ).format( DATE_FORMAT )} />
       </ColumnGroup>
-      
+
       <Column
         align="center"
         title="Aksi"
         key="action"
         width={95}
-        render={(_, record: Schedule) =>
+        render={( _, record: Schedule ) =>
           editKey === record.id ? (
-            <Space>
-              <Button onClick={() => handleSave(record.id)} type="primary" loading={loading}>
+            <Space className='flex justify-items-center'>
+              <Button
+                onClick={() => handleSave( record.id )}
+                type="primary"
+                className='flex justify-items-center'
+                loading={loading}
+              >
                 {!loading && <SaveFilled className='text-xl -mx-2' />}
               </Button>
-              <Button onClick={onCancel} danger disabled={loading}>
+              <Button
+                danger
+                onClick={onCancel}
+                className='flex justify-items-center'
+                loading={loading}
+              >
                 {!loading && <CloseSquareFilled className='text-xl -mx-2' />}
               </Button>
             </Space>
           ) : (
-            <Space>
-              <Button onClick={() => onEdit(record)} type="default" disabled={loading}>
+            <Space className='flex justify-items-center'>
+              <Button
+                onClick={() => onEdit( record )}
+                type="default"
+                className='flex justify-items-center'
+                loading={loading}
+              >
                 {!loading && <EditFilled className='text-xl -mx-2' />}
               </Button>
-              <Button danger onClick={() => onDelete(record.id)} loading={loading}>
+              <Button
+                danger
+                onClick={() => onDelete( record.id )}
+                className='flex justify-items-center'
+                loading={loading}
+              >
                 {!loading && <DeleteFilled className='text-xl -mx-2' />}
               </Button>
             </Space>
