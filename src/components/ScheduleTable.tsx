@@ -60,7 +60,7 @@ export const ScheduleTable = ( {
       pagination={false}
       rowKey="id"
       loading={loading}
-      scroll={{ x: 1200 }}
+      scroll={{ x: 'max-content' }}
       bordered
       locale={{
         emptyText: (
