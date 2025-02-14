@@ -19,6 +19,7 @@ export interface ScheduleTableProps {
   schedule: Schedule[];
   onEdit: (record: Schedule) => void;
   onDelete: (key: string) => void;
+  onFinish: (key: string) => void;
   onSave: (key: string, date: Dayjs) => void;
   onCancel: () => void;
   editKey: string | null;

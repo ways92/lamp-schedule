@@ -1,3 +1,5 @@
+import Provider from "@/components/SessionProvider";
+import { Toaster } from "react-hot-toast";
 import type { Metadata } from "next";
 import "./globals.css";
 
@@ -17,11 +19,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
  return (
-  <html lang="en">
+  <html lang="en" suppressHydrationWarning>
     <body>
       <div className="relative overflow-hidden min-h-screen">
-        <div className="relative z-10">{children}</div>
+        <Toaster />
+        <Provider>
+           {children}
+        </Provider>
       </div>
+      
     </body>
   </html>
 );

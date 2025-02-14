@@ -17,7 +17,7 @@ import { alignCenterFormat } from '@/utils/ComponentUtils';
 dayjs.extend( utc );
 dayjs.extend( timezone );
 
-export const ScheduleTable = ( {
+export const FinishTable = ( {
   schedule,
   onEdit,
   onDelete,
@@ -177,7 +177,7 @@ export const ScheduleTable = ( {
                 {!loading && <DeleteFilled className='text-xl -mx-2' />}
               </Button>
               <Button
-                color="cyan" variant="solid"
+                color="purple" variant="solid"
                 onClick={() => onFinish( record.id )}
                 className='flex justify-items-center'
                 loading={loading}
@@ -192,4 +192,4 @@ export const ScheduleTable = ( {
   );
 };
 
-export default ScheduleTable;
+export default FinishTable;

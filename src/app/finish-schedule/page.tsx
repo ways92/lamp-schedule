@@ -4,24 +4,23 @@ import '@ant-design/v5-patch-for-react-19';
 import { ConfigProvider } from 'antd';
 import idID from 'antd/es/locale/id_ID';
 import { useSchedule } from '@/hooks/useSchedule';
-import ScheduleForm from '@/components/ScheduleForm';
-import ScheduleTable from '@/components/ScheduleTable';
+import FinishTable from '@/components/FinishTable';
 import SkeletonLoading from '@/components/SkeletonLoading';
 import { Suspense } from 'react';
 import '@/config/dateConfig';
 import Image from 'next/image';
 
-export default function LampSchedule()
+export default function FinishPage()
 {
   const {
-    schedule,
+    finishSchedule,
     editKey,
     editDate,
     loading,
     isPending,
     setEditDate,
     saveFinish,
-    addNewSchedule,
+    saveUnfinish,
     removeSchedule,
     startEdit,
     saveEdit,
@@ -59,12 +58,11 @@ export default function LampSchedule()
       <ConfigProvider locale={idID}>
         <Suspense fallback={<SkeletonLoading />}>
           <div className="p-2 max-w-7xl mx-auto pt-4">
-            <h1 className="relative text-xl font-bold mb-2">Jadwal Lampu Naga</h1>
-            <ScheduleForm addSchedule={addNewSchedule} loading={isPending} />
-            <ScheduleTable
-              schedule={schedule}
+            <h1 className="relative text-xl font-bold mb-2">Jadwal Lampu Naga Yang Selesai</h1>
+            <FinishTable
+              schedule={finishSchedule}
               onEdit={startEdit}
-              onFinish={saveFinish}
+              onFinish={saveUnfinish}
               onDelete={removeSchedule}
               onSave={saveEdit}
               onCancel={cancelEdit}
