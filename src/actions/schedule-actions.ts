@@ -4,34 +4,46 @@ import { prisma } from "@/lib/prisma";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from 'dayjs/plugin/timezone';
-
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
+
 // Ambil semua data schedule
 export const getSchedules = async () => {
-  const schedules = await prisma.schedule.findMany({
+  const session = await getServerSession( authOptions );
+  if ( !session?.user ) throw new Error( "Unauthorized" );
+
+  const schedules = await prisma.schedule.findMany( {
+    where: {
+      authorId: session?.user.id
+    },
     orderBy: {
       createdAt: 'asc', 
     },
   });
+
+  console.timeEnd("getSchedules duration"); // Akhir timing
   
   return schedules.map((schedule) => ({
     ...schedule,
-    startLive: schedule.startLive.toISOString(),
-    endLive: schedule.endLive.toISOString(),
-    startOff: schedule.startOff.toISOString(),
-    endOff: schedule.endOff.toISOString(),
-    createdAt: schedule.createdAt.toISOString(),
-    updatedAt: schedule.updatedAt.toISOString(),
+    startLive: schedule.startLive,
+    endLive: schedule.endLive,
+    startOff: schedule.startOff,
+    endOff: schedule.endOff,
+    createdAt: schedule.createdAt,
+    updatedAt: schedule.updatedAt,
   }));
 };
 
 
 // Tambah schedule baru
 export async function addSchedule(startLive: string) {
-  const startDateWIB = dayjs.tz(startLive, "Asia/Jakarta");
+  const session = await getServerSession( authOptions );
+  if ( !session?.user ) throw new Error( "Unauthorized" );
   
+  const startDateWIB = dayjs.tz(startLive, "Asia/Jakarta");
   const endLiveWIB = startDateWIB.add(19, "days");
   const startOffWIB = endLiveWIB.add(1, "day");
   const endOffWIB = startOffWIB.add(9, "days");
@@ -47,19 +59,27 @@ export async function addSchedule(startLive: string) {
       endLive: endLiveUTC.toDate(),
       startOff: startOffUTC.toDate(),
       endOff: endOffUTC.toDate(),
+      authorId: session.user.id
     },
   });
 }
 
+
 // Hapus schedule
 export async function deleteSchedule(id: string) {
+  const session = await getServerSession( authOptions );
+  if ( !session?.user ) throw new Error( "Unauthorized" );
+
   await prisma.schedule.delete({ where: { id } });
 }
 
+
 // Update schedule
 export async function updateSchedule(id: string, startLive: string) {
-  const startDateUTC = dayjs.utc(startLive);
+  const session = await getServerSession( authOptions );
+  if ( !session?.user ) throw new Error( "Unauthorized" );
 
+  const startDateUTC = dayjs.utc(startLive);
   const startDateWIB = startDateUTC.tz('Asia/Jakarta');
   const endLive = startDateWIB.add(19, 'days').utc();
   const startOff = endLive.add(1, 'day').utc();

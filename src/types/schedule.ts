@@ -8,6 +8,7 @@ export type Schedule = {
   endOff: Dayjs;
   createdAt: Dayjs;
   updatedAt: Dayjs;
+  authorId: string | null;
 };
 
 export interface ScheduleFormProps {

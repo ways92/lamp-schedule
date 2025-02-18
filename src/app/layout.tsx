@@ -1,5 +1,8 @@
+import Provider from "@/components/SessionProvider";
+import { Toaster } from "react-hot-toast";
 import type { Metadata } from "next";
 import "./globals.css";
+import AutoLogout from "./autoLogout";
 
 export const metadata: Metadata = {
   title: "Lamp Schedule",
@@ -17,18 +20,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
  return (
-  <html lang="en">
-    <body>
-      <div className="relative overflow-hidden min-h-screen">
-        <div className="relative z-10">{children}</div>
-      </div>
-    </body>
-  </html>
-);
-
-
-
-
-
-
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <Provider>
+          <AutoLogout/>
+          <Toaster />
+          <div className="relative overflow-hidden min-h-screen">
+              {children}
+          </div>
+        </Provider>
+      </body>
+    </html>
+  );
 }

@@ -1,26 +1,26 @@
 "use client";
-
-import { useState, useTransition, useEffect } from "react";
+import { useState, useTransition, useEffect, useCallback } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import { Schedule } from "@/types/schedule";
-import { getSchedules, addSchedule, deleteSchedule, updateSchedule } from "../schedule/actions";
+import { getSchedules, addSchedule, deleteSchedule, updateSchedule } from "../actions/schedule-actions";
+import toast from "react-hot-toast";
 
 export const useSchedule = () => {
-  const [schedule, setSchedule] = useState<Schedule[]>([]);
+  const [schedule, setSchedule] = useState<Schedule[]>([]); 
   const [editKey, setEditKey] = useState<string | null>(null);
   const [editDate, setEditDate] = useState<Dayjs | null>(null);
   const [errorDateEdit, setErrorDateEdit] = useState("");
   const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState(true);
+  const [searchYear, setSearchYear] = useState<number | null>(null);
 
-  useEffect(() => {
-    const fetchSchedules = async () => {
-      setLoading( true );
-      
-      try {
-        const schedules = await getSchedules();
-        
-        const formattedSchedules = schedules.map((schedule) => ({
+  const fetchSchedules = useCallback(async (giveLoading: boolean) => {
+    if (giveLoading) setLoading(true);
+
+    try {
+      const schedules = await getSchedules()
+
+      const formattedSchedules = schedules.map((schedule) => ({
           ...schedule,
           startLive: dayjs(schedule.startLive),
           endLive: dayjs(schedule.endLive),
@@ -28,56 +28,39 @@ export const useSchedule = () => {
           endOff: dayjs(schedule.endOff),
           createdAt: dayjs(schedule.createdAt),
           updatedAt: dayjs(schedule.updatedAt),
-        }));
-
+        } ) );
         setSchedule(formattedSchedules);
-      } catch (error) {
-        console.error("Error fetching schedules:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSchedules();
+    } catch (error) {
+      toast.error("Gagal memuat jadwal, silahkan coba lagi.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
+  useEffect(() => {
+    fetchSchedules(true);
+  }, [fetchSchedules]);
+
+  const filterByYear = (scheduleList: Schedule[], year: number | null) => {
+    if (!year) return scheduleList;
+    return scheduleList.filter((schedule) => dayjs(schedule.startLive).year() === year);
+  };
+
+  const filteredSchedule = filterByYear(schedule, searchYear);
+
   const addNewSchedule = async (startLive: Dayjs) => {
-    if ( !startLive ) return;
-    
+    if (!startLive) return;
+
     startTransition(async () => {
       await addSchedule(startLive.toISOString());
-      const data = await getSchedules();
-
-      const formattedData = data.map((schedule) => ({
-        ...schedule,
-        startLive: dayjs(schedule.startLive),
-        endLive: dayjs(schedule.endLive),
-        startOff: dayjs(schedule.startOff),
-        endOff: dayjs(schedule.endOff),
-        createdAt: dayjs(schedule.createdAt),
-        updatedAt: dayjs(schedule.updatedAt),
-      }));
-
-      setSchedule(formattedData);
+      await fetchSchedules(false);
     });
   };
 
   const removeSchedule = async (id: string) => {
     startTransition(async () => {
       await deleteSchedule(id);
-      const data = await getSchedules();
-
-      const formattedData = data.map((schedule) => ({
-        ...schedule,
-        startLive: dayjs(schedule.startLive),
-        endLive: dayjs(schedule.endLive),
-        startOff: dayjs(schedule.startOff),
-        endOff: dayjs(schedule.endOff),
-        createdAt: dayjs(schedule.createdAt),
-        updatedAt: dayjs(schedule.updatedAt),
-      }));
-
-      setSchedule(formattedData);
+      await fetchSchedules(false);
     });
   };
 
@@ -87,22 +70,10 @@ export const useSchedule = () => {
   };
 
   const saveEdit = async (id: string, newStartLive: Dayjs) => {
-
     startTransition(async () => {
       await updateSchedule(id, newStartLive.toISOString());
-      const data = await getSchedules();
+      await fetchSchedules(false);
 
-      const formattedData = data.map((schedule) => ({
-        ...schedule,
-        startLive: dayjs(schedule.startLive),
-        endLive: dayjs(schedule.endLive),
-        startOff: dayjs(schedule.startOff),
-        endOff: dayjs(schedule.endOff),
-        createdAt: dayjs(schedule.createdAt),
-        updatedAt: dayjs(schedule.updatedAt),
-      }));
-
-      setSchedule(formattedData);
       setEditKey(null);
       setEditDate(null);
       setErrorDateEdit("");
@@ -116,7 +87,7 @@ export const useSchedule = () => {
   };
 
   return {
-    schedule,
+    schedule: filteredSchedule,
     editKey,
     editDate,
     errorDateEdit,
@@ -129,5 +100,7 @@ export const useSchedule = () => {
     startEdit,
     saveEdit,
     cancelEdit,
+    searchYear,
+    setSearchYear,
   };
 };
