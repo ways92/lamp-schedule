@@ -13,7 +13,7 @@ export async function middleware(req: NextRequest) {
     }
 
     if (token && isAuthPage) {
-      return NextResponse.redirect(new URL("/dashboard", process.env.NEXTAUTH_URL || req.url));
+      return NextResponse.redirect(new URL("/lamp-schedule", process.env.NEXTAUTH_URL || req.url));
     }
 
     return NextResponse.next();

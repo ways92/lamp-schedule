@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { NextAuthOptions } from "next-auth";
 
 // 7 hari dalam detik
-const expiredToken = 7 * 60 * 60 * 24;
+const expiredToken = 7 * 24 * 60 * 60;
 
 export const authOptions: NextAuthOptions = {
   session: {

@@ -26,8 +26,8 @@ export default function AutoLogout() {
       toast( "Sesi telah berakhir" );
 
       setTimeout(() => {
-        signOut();
-        router.push("/auth/login");
+        signOut({callbackUrl: "/auth/login"});
+        router.push( "/auth/login" );
       }, 3000);
     }
 
@@ -36,8 +36,8 @@ export default function AutoLogout() {
       toast( "Sesi telah berakhir" );
 
       setTimeout(() => {
-        signOut();
-        router.push("/auth/login");
+        signOut({callbackUrl: "/auth/login"});
+        router.push( "/auth/login" );
       }, 3000);
     }, timeUntilExpiration);
 

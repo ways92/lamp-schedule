@@ -23,8 +23,6 @@ export const getSchedules = async () => {
       createdAt: 'asc', 
     },
   });
-
-  console.timeEnd("getSchedules duration"); // Akhir timing
   
   return schedules.map((schedule) => ({
     ...schedule,
