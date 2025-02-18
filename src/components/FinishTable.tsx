@@ -21,7 +21,6 @@ export const FinishTable = ( {
   schedule,
   onEdit,
   onDelete,
-  onFinish,
   onSave,
   onCancel,
   editKey,
@@ -178,7 +177,7 @@ export const FinishTable = ( {
               </Button>
               <Button
                 color="purple" variant="solid"
-                onClick={() => onFinish( record.id )}
+                // onClick={() => onFinish( record.id )}
                 className='flex justify-items-center'
                 loading={loading}
               >
