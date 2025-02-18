@@ -1,11 +1,15 @@
-import NextAuth,{AuthOptions} from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
 
-export const authOptions : AuthOptions = {
+const expiredToken = 7 * 60 * 60
+
+export const authOptions: AuthOptions = {
+
   session: {
     strategy: "jwt",
+    maxAge: expiredToken,
   },
   providers: [
     CredentialsProvider({
@@ -43,7 +47,10 @@ export const authOptions : AuthOptions = {
       return session;
     },
     async jwt({ token, user }) {
-      if (user) token.sub = user.id;
+      if (user) {
+        token.sub = user.id;
+        token.exp = Math.floor(Date.now() / 1000) + expiredToken; // Expire dalam 1 hari
+      }
       return token;
     },
   },

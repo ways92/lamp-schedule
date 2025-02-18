@@ -10,6 +10,7 @@ import SkeletonLoading from '@/components/SkeletonLoading';
 import { Suspense } from 'react';
 import '@/config/dateConfig';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function LampSchedule()
 {
@@ -20,7 +21,6 @@ export default function LampSchedule()
     loading,
     isPending,
     setEditDate,
-    saveFinish,
     addNewSchedule,
     removeSchedule,
     startEdit,
@@ -59,12 +59,14 @@ export default function LampSchedule()
       <ConfigProvider locale={idID}>
         <Suspense fallback={<SkeletonLoading />}>
           <div className="p-2 max-w-7xl mx-auto pt-4">
-            <h1 className="relative text-xl font-bold mb-2">Jadwal Lampu Naga</h1>
+            <div className='relative flex justify-between mb-2'>
+              <h1 className="text-xl font-bold">Jadwal Lampu Naga</h1>
+              <Link href={"/dashboard"} className="underline text-blue-800 hover:text-blue-500" >Ke dashboard</Link>
+            </div>
             <ScheduleForm addSchedule={addNewSchedule} loading={isPending} />
             <ScheduleTable
               schedule={schedule}
               onEdit={startEdit}
-              onFinish={saveFinish}
               onDelete={removeSchedule}
               onSave={saveEdit}
               onCancel={cancelEdit}

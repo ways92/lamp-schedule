@@ -29,7 +29,6 @@ model Schedule {
   endOff    DateTime @db.Timestamptz
   createdAt DateTime @default(now()) @db.Timestamptz
   updatedAt DateTime @updatedAt @db.Timestamptz
-  isFinish  Boolean  @default(false)
   authorId  String?
   author    User?    @relation(fields: [authorId], references: [id])
 }

@@ -41,7 +41,7 @@ export default function LoginForm() {
         message.error( "Login gagal. Periksa email dan password Anda." );
       } else {
         message.success( "Login berhasil!" );
-        router.push( "/dashboard" );
+        router.push( "/lamp-schedule" );
       }
     } catch ( error ) {
       message.error( "Terjadi kesalahan. Silakan coba lagi." );

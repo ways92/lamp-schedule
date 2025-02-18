@@ -6,9 +6,9 @@ import utc from "dayjs/plugin/utc";
 import timezone from 'dayjs/plugin/timezone';
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-
 dayjs.extend(utc);
 dayjs.extend(timezone);
+
 
 // Ambil semua data schedule
 export const getSchedules = async () => {
@@ -17,13 +17,14 @@ export const getSchedules = async () => {
 
   const schedules = await prisma.schedule.findMany( {
     where: {
-      authorId: session?.user.id,
-      isFinish: false
+      authorId: session?.user.id
     },
     orderBy: {
       createdAt: 'asc', 
     },
   });
+
+  console.timeEnd("getSchedules duration"); // Akhir timing
   
   return schedules.map((schedule) => ({
     ...schedule,
@@ -35,56 +36,6 @@ export const getSchedules = async () => {
     updatedAt: schedule.updatedAt,
   }));
 };
-
-// Ambil semua data schedule
-export const getFinishSchedules = async () => {
-  const session = await getServerSession( authOptions );
-  if ( !session?.user ) throw new Error( "Unauthorized" );
-
-  const schedules = await prisma.schedule.findMany( {
-    where: {
-      authorId: session?.user.id,
-      isFinish: true
-    },
-    orderBy: {
-      createdAt: 'asc', 
-    },
-  });
-  
-  return schedules.map((schedule) => ({
-    ...schedule,
-    startLive: schedule.startLive,
-    endLive: schedule.endLive,
-    startOff: schedule.startOff,
-    endOff: schedule.endOff,
-    createdAt: schedule.createdAt,
-    updatedAt: schedule.updatedAt,
-  }));
-};
-
-export const changeFinish = async (id: string) => {
-  const session = await getServerSession( authOptions );
-  if ( !session?.user ) throw new Error( "Unauthorized" );
-
-  await prisma.schedule.update({
-    where: { id },
-    data: {
-      isFinish : true
-    },
-  });
-}
-
-export const changeUnfinish = async (id: string) => {
-  const session = await getServerSession( authOptions );
-  if ( !session?.user ) throw new Error( "Unauthorized" );
-
-  await prisma.schedule.update({
-    where: { id },
-    data: {
-      isFinish : false
-    },
-  });
-}
 
 
 // Tambah schedule baru
@@ -113,6 +64,7 @@ export async function addSchedule(startLive: string) {
   });
 }
 
+
 // Hapus schedule
 export async function deleteSchedule(id: string) {
   const session = await getServerSession( authOptions );
@@ -120,6 +72,7 @@ export async function deleteSchedule(id: string) {
 
   await prisma.schedule.delete({ where: { id } });
 }
+
 
 // Update schedule
 export async function updateSchedule(id: string, startLive: string) {

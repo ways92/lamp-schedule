@@ -1,27 +1,26 @@
 "use client";
-
-import { useState, useTransition, useEffect } from "react";
+import { useState, useTransition, useEffect, useCallback } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import { Schedule } from "@/types/schedule";
-import { getSchedules, addSchedule, deleteSchedule, updateSchedule, changeFinish, changeUnfinish, getFinishSchedules } from "../actions/schedule-actions";
+import { getSchedules, addSchedule, deleteSchedule, updateSchedule } from "../actions/schedule-actions";
+import toast from "react-hot-toast";
 
 export const useSchedule = () => {
-  const [schedule, setSchedule] = useState<Schedule[]>([]);
-  const [finishSchedule, setFinishSchedule] = useState<Schedule[]>([]);
+  const [schedule, setSchedule] = useState<Schedule[]>([]); 
   const [editKey, setEditKey] = useState<string | null>(null);
   const [editDate, setEditDate] = useState<Dayjs | null>(null);
   const [errorDateEdit, setErrorDateEdit] = useState("");
   const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState(true);
+  const [searchYear, setSearchYear] = useState<number | null>(null);
 
-  useEffect(() => {
-    const fetchSchedules = async () => {
-      setLoading( true );
-      
-      try {
-        const schedules = await getSchedules();
-        
-        const formattedSchedules = schedules.map((schedule) => ({
+  const fetchSchedules = useCallback(async (giveLoading: boolean) => {
+    if (giveLoading) setLoading(true);
+
+    try {
+      const schedules = await getSchedules()
+
+      const formattedSchedules = schedules.map((schedule) => ({
           ...schedule,
           startLive: dayjs(schedule.startLive),
           endLive: dayjs(schedule.endLive),
@@ -31,100 +30,37 @@ export const useSchedule = () => {
           updatedAt: dayjs(schedule.updatedAt),
         } ) );
         setSchedule(formattedSchedules);
-        
-        const finishSchedules = await getFinishSchedules();
-        const formattedFinishSchedules = finishSchedules.map((schedule) => ({
-          ...schedule,
-          startLive: dayjs(schedule.startLive),
-          endLive: dayjs(schedule.endLive),
-          startOff: dayjs(schedule.startOff),
-          endOff: dayjs(schedule.endOff),
-          createdAt: dayjs(schedule.createdAt),
-          updatedAt: dayjs(schedule.updatedAt),
-        }));
-        setFinishSchedule(formattedFinishSchedules);
-      } catch (error) {
-        console.error("Error fetching schedules:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchFinishSchedules = async () => {
-      setLoading( true );
-      
-      try {
-        const finishSchedules = await getFinishSchedules();
-        const formattedFinishSchedules = finishSchedules.map((schedule) => ({
-          ...schedule,
-          startLive: dayjs(schedule.startLive),
-          endLive: dayjs(schedule.endLive),
-          startOff: dayjs(schedule.startOff),
-          endOff: dayjs(schedule.endOff),
-          createdAt: dayjs(schedule.createdAt),
-          updatedAt: dayjs(schedule.updatedAt),
-        }));
-        setFinishSchedule(formattedFinishSchedules);
-      } catch (error) {
-        console.error("Error fetching finish schedules:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchFinishSchedules()
-
-    fetchSchedules();
+    } catch (error) {
+      toast.error("Gagal memuat jadwal, silahkan coba lagi.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
-  
-  const fetchAllSchedules = async () => {
-    startTransition( async () => { 
-      const data = await getSchedules();
-      const formattedData = data.map((schedule) => ({
-        ...schedule,
-         startLive: dayjs(schedule.startLive),
-        endLive: dayjs(schedule.endLive),
-        startOff: dayjs(schedule.startOff),
-        endOff: dayjs(schedule.endOff),
-        createdAt: dayjs(schedule.createdAt),
-        updatedAt: dayjs(schedule.updatedAt),
-      }));
-      
-      setSchedule(formattedData);
-    })
-  }
 
-  const fetchFinishSchedules = async () => {
-    startTransition( async () => { 
-      const data = await getFinishSchedules();
-      const formattedData = data.map((schedule) => ({
-        ...schedule,
-         startLive: dayjs(schedule.startLive),
-        endLive: dayjs(schedule.endLive),
-        startOff: dayjs(schedule.startOff),
-        endOff: dayjs(schedule.endOff),
-        createdAt: dayjs(schedule.createdAt),
-        updatedAt: dayjs(schedule.updatedAt),
-      }));
-      
-      setFinishSchedule(formattedData);
-    })
-  }
+  useEffect(() => {
+    fetchSchedules(true);
+  }, [fetchSchedules]);
+
+  const filterByYear = (scheduleList: Schedule[], year: number | null) => {
+    if (!year) return scheduleList;
+    return scheduleList.filter((schedule) => dayjs(schedule.startLive).year() === year);
+  };
+
+  const filteredSchedule = filterByYear(schedule, searchYear);
 
   const addNewSchedule = async (startLive: Dayjs) => {
-    if ( !startLive ) return;
-    
+    if (!startLive) return;
+
     startTransition(async () => {
       await addSchedule(startLive.toISOString());
-      await fetchAllSchedules()
+      await fetchSchedules(false);
     });
   };
 
   const removeSchedule = async (id: string) => {
     startTransition(async () => {
-      await deleteSchedule( id );
-      await fetchFinishSchedules()
-      await fetchAllSchedules()
+      await deleteSchedule(id);
+      await fetchSchedules(false);
     });
   };
 
@@ -134,32 +70,15 @@ export const useSchedule = () => {
   };
 
   const saveEdit = async (id: string, newStartLive: Dayjs) => {
-
     startTransition(async () => {
       await updateSchedule(id, newStartLive.toISOString());
-      await fetchFinishSchedules()
-      await fetchAllSchedules()
+      await fetchSchedules(false);
 
       setEditKey(null);
       setEditDate(null);
       setErrorDateEdit("");
     });
   };
-
-
-  const saveFinish = async (id :string) => { 
-    startTransition( async () => { 
-      await changeFinish( id )
-      await fetchFinishSchedules()
-      await fetchAllSchedules()
-    })
-  }
-
-  const saveUnfinish = async (id : string) => { 
-    await changeUnfinish( id )
-      await fetchFinishSchedules()
-      await fetchAllSchedules()
-  }
 
   const cancelEdit = () => {
     setEditKey(null);
@@ -168,8 +87,7 @@ export const useSchedule = () => {
   };
 
   return {
-    schedule,
-    finishSchedule,
+    schedule: filteredSchedule,
     editKey,
     editDate,
     errorDateEdit,
@@ -178,11 +96,11 @@ export const useSchedule = () => {
     setErrorDateEdit,
     setEditDate,
     addNewSchedule,
-    saveFinish,
-    saveUnfinish,
     removeSchedule,
     startEdit,
     saveEdit,
     cancelEdit,
+    searchYear,
+    setSearchYear,
   };
 };
