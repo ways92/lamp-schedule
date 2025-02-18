@@ -13,9 +13,11 @@ export default function LogoutButton() {
   const onSignOut = async ( ) => {
     setLoading( true );
     try {
-      await signOut( { redirect: false } );
       toast.success( "Logout berhasil!" );
-      router.push( "/auth/login" );
+      setTimeout( async ()  => {
+        await signOut({callbackUrl: "/auth/login"});
+        router.push( "/auth/login" );
+      }, 1500);
     } catch ( error ) {
       toast.error( "Terjadi kesalahan. Silakan coba lagi." );
     } finally {
