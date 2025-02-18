@@ -3,10 +3,9 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import { prisma } from "@/lib/prisma";
 
-const expiredToken = 7 * 60 * 60
+const expiredToken = 7 * 60 * 60; // 7 hours in seconds
 
 export const authOptions: AuthOptions = {
-
   session: {
     strategy: "jwt",
     maxAge: expiredToken,
@@ -43,13 +42,16 @@ export const authOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async session({ session, token }) {
-      session.user.id = token.sub as string;
+      if (token?.sub) {
+        session.user.id = token.sub as string;
+      }
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
         token.sub = user.id;
-        token.exp = Math.floor(Date.now() / 1000) + expiredToken; // Expire dalam 1 hari
+        // `exp` already managed by NextAuth's JWT handling, but can be modified if needed
+        token.exp = Math.floor(Date.now() / 1000) + expiredToken; // Manually setting expiration time
       }
       return token;
     },
@@ -59,5 +61,4 @@ export const authOptions: AuthOptions = {
   },
 };
 
-const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
+export default NextAuth(authOptions);
