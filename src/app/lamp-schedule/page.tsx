@@ -1,7 +1,7 @@
 'use client';
 
 import '@ant-design/v5-patch-for-react-19';
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, Form } from 'antd';
 import idID from 'antd/es/locale/id_ID';
 import { useSchedule } from '@/hooks/useSchedule';
 import ScheduleForm from '@/components/ScheduleForm';
@@ -12,8 +12,7 @@ import '@/config/dateConfig';
 import Image from 'next/image';
 import Link from 'next/link';
 
-export default function LampSchedule()
-{
+export default function LampSchedule() {
   const {
     schedule,
     editKey,
@@ -27,6 +26,11 @@ export default function LampSchedule()
     saveEdit,
     cancelEdit,
   } = useSchedule();
+  const [form] = Form.useForm();
+    
+  const resetFormError = () => {
+    form.resetFields();
+  };
 
   if ( loading ) {
     return (
@@ -63,7 +67,7 @@ export default function LampSchedule()
               <h1 className="text-xl font-bold">Jadwal Lampu Naga</h1>
               <Link href={"/dashboard"} className="underline text-blue-800 hover:text-blue-500" >Ke dashboard</Link>
             </div>
-            <ScheduleForm addSchedule={addNewSchedule} loading={isPending} />
+            <ScheduleForm addSchedule={addNewSchedule} loading={isPending} form={form} />
             <ScheduleTable
               schedule={schedule}
               onEdit={startEdit}
@@ -74,6 +78,7 @@ export default function LampSchedule()
               editDate={editDate}
               setEditDate={setEditDate}
               loading={isPending}
+              resetFormError={resetFormError}
             />
           </div>
         </Suspense>

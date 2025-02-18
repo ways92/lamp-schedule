@@ -27,7 +27,8 @@ export const ScheduleTable = ({
   editKey,
   editDate,
   setEditDate,
-  loading
+  loading,
+  resetFormError
 }: ScheduleTableProps) => {
   const [form] = Form.useForm();
   const [currentPage, setCurrentPage] = useState(1);
@@ -82,7 +83,7 @@ export const ScheduleTable = ({
   return (
     <>
       <Tabs
-        className="mt-2"
+        className={filteredSchedule.length === 0 ? "mt-6" : "mt-2"}
         activeKey={String(selectedYear)}
         onChange={handleTabChange}
         centered
@@ -209,7 +210,10 @@ export const ScheduleTable = ({
               <Space className="flex justify-items-center">
                 <Tooltip title="Simpan" color="blue">
                   <Button
-                    onClick={() => handleSave(record.id)}
+                    onClick={() => { 
+                      handleSave( record.id ) 
+                      resetFormError()
+                    }}
                     type="primary"
                     loading={loading}
                   >
@@ -219,7 +223,10 @@ export const ScheduleTable = ({
                 <Tooltip title="Batal" color="red">
                   <Button
                     danger
-                    onClick={onCancel}
+                    onClick={() => { 
+                      onCancel(); 
+                      resetFormError()
+                      }}
                     loading={loading}
                   >
                     {!loading && <CloseSquareFilled className="text-xl -mx-2" />}
@@ -232,11 +239,13 @@ export const ScheduleTable = ({
                     title="Edit" 
                     color="cyan">
                     <Button
-                      onClick={() => onEdit(record)}
+                      onClick={() => { 
+                        onEdit( record ); 
+                        resetFormError()
+                      }}
                       loading={loading}
                       color="cyan"
                       variant="outlined"
-                        
                     >
                       {!loading && <EditFilled className="text-xl -mx-2" />}
                     </Button>
@@ -246,7 +255,10 @@ export const ScheduleTable = ({
                     color="red">
                     <Button
                       danger
-                      onClick={() => onDelete(record.id)}
+                      onClick={() => {
+                        onDelete( record.id )
+                        resetFormError()
+                      }}
                       loading={loading}
                     >
                       {!loading && <DeleteFilled className="text-xl -mx-2" />}

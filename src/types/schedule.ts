@@ -1,4 +1,5 @@
 import { Dayjs } from "dayjs";
+import { FormInstance } from 'antd';
 
 export type Schedule = {
   id: string;
@@ -14,6 +15,7 @@ export type Schedule = {
 export interface ScheduleFormProps {
   addSchedule: (date: Dayjs) => void;
   loading: boolean;
+  form: FormInstance;
 }
 
 export interface ScheduleTableProps {
@@ -26,4 +28,5 @@ export interface ScheduleTableProps {
   editDate: Dayjs | null;
   setEditDate: (date: Dayjs | null) => void;
   loading: boolean;
+  resetFormError: () => void;
 }

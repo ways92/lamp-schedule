@@ -13,8 +13,8 @@ import timezone from "dayjs/plugin/timezone";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-export const ScheduleForm = ({ addSchedule, loading }: ScheduleFormProps) => {
-  const [form] = Form.useForm();
+export const ScheduleForm = ({ addSchedule, loading, form }: ScheduleFormProps) => {
+  // const [form] = Form.useForm();
   const [newDate, setNewDate] = useState<Dayjs | null>(null);
 
   const handleAddSchedule = useCallback(() => {
