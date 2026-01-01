@@ -1,6 +1,6 @@
 'use client';
 
-import '@ant-design/v5-patch-for-react-19';
+// import '@ant-design/v5-patch-for-react-19';
 import { ConfigProvider, Form } from 'antd';
 import idID from 'antd/es/locale/id_ID';
 import { useSchedule } from '@/hooks/useSchedule';
