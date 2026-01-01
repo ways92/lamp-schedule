@@ -34,13 +34,14 @@ export const ScheduleTable = ({
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const allAvailableYears = Array.from(new Set(schedule.map((record) => dayjs(record.startLive).year())));
+  const sortedYearsDesc = allAvailableYears.sort((a, b) => b - a);
 
   useEffect(() => {
-    const years = Array.from(new Set(schedule.map((record) => dayjs(record.startLive).year())));
-    if (!selectedYear || !years.includes(selectedYear)) {
-      setSelectedYear(years[0]);
+    if (sortedYearsDesc.length > 0 && (!selectedYear || !sortedYearsDesc.includes(selectedYear))) {
+      setSelectedYear(sortedYearsDesc[0]);
     }
-  }, [schedule, selectedYear]);
+  }, [schedule, selectedYear, sortedYearsDesc]); // Add sortedYearsDesc as a dependency
 
   useEffect(() => {
     if (editKey) {
@@ -69,11 +70,7 @@ export const ScheduleTable = ({
   const filteredSchedule = selectedYear
     ? schedule.filter((record) => dayjs(record.startLive).year() === selectedYear)
     : schedule;
-
-  const years = Array.from(new Set(schedule.map((record) => dayjs(record.startLive).year())));
-
-  const tabItems = years
-    .sort((a, b) => b - a)
+  const tabItems = sortedYearsDesc
     .map((year) => ({
       label: String(year),
       key: String(year),
