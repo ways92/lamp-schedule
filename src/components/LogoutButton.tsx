@@ -1,5 +1,5 @@
 "use client";
-import '@ant-design/v5-patch-for-react-19';
+// import '@ant-design/v5-patch-for-react-19';
 import { Button } from "antd";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
