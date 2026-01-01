@@ -46,10 +46,7 @@ export default function LoginForm() {
     } catch ( error ) {
       message.error( "Terjadi kesalahan. Silakan coba lagi." );
     } finally {
-      setTimeout( () =>
-      {
-        setLoading( false );
-      }, 200 );
+      setLoading( false );
     }
   };
 
@@ -59,22 +56,28 @@ export default function LoginForm() {
         <Title level={2} className="text-center mb-6 animate-bounce">
           Login
         </Title>
-        <Form layout="vertical" onFinish={handleSubmit( onSubmit )}>
+        <Form
+          layout="vertical"
+          onFinish={handleSubmit( onSubmit )}
+          initialValues={{ email: '', password: '' }} // Added initialValues here
+        >
           {/* Email Field */}
           <Form.Item
             label="Email"
+            name="email"
             validateStatus={errors.email ? "error" : ""}
             help={errors.email?.message}
           >
             <Controller
               name="email"
               control={control}
-              defaultValue=""
               render={( { field } ) => (
                 <Input
                   {...field}
+                  id={field.name} // Added explicit id to match Form.Item's expected htmlFor
                   prefix={<MailOutlined />}
                   placeholder="Masukkan email"
+                  autoComplete="email" // Added autocomplete attribute
                 />
               )}
             />
@@ -83,18 +86,20 @@ export default function LoginForm() {
           {/* Password Field */}
           <Form.Item
             label="Kata Sandi"
+            name="password"
             validateStatus={errors.password ? "error" : ""}
             help={errors.password?.message}
           >
             <Controller
               name="password"
               control={control}
-              defaultValue=""
               render={( { field } ) => (
                 <Input.Password
                   {...field}
+                  id={field.name} // Added explicit id to match Form.Item's expected htmlFor
                   prefix={<LockOutlined />}
                   placeholder="Masukkan Kata Sandi"
+                  autoComplete="current-password" // Added autocomplete attribute
                 />
               )}
             />
