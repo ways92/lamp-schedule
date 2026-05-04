@@ -74,7 +74,7 @@ export const ScheduleTable = ({
     .map((year) => ({
       label: String(year),
       key: String(year),
-  }));
+    }));
 
 
   return (
@@ -106,6 +106,7 @@ export const ScheduleTable = ({
           emptyText: (
             <div className="flex flex-col items-center justify-center">
               <Image
+                unoptimized
                 src="/images/img-dragon.png"
                 alt="No Data"
                 width={150}
@@ -201,67 +202,71 @@ export const ScheduleTable = ({
           title="Aksi"
           fixed="right"
           key="action"
-          width={95}
+          width={85}
           render={(_, record: Schedule) =>
             editKey === record.id ? (
-              <Space className="flex justify-items-center">
+              <Space className="flex justify-center">
                 <Tooltip title="Simpan" color="blue">
                   <Button
-                    onClick={() => { 
-                      handleSave( record.id ) 
+                    onClick={() => {
+                      handleSave(record.id)
                       resetFormError()
                     }}
                     type="primary"
                     loading={loading}
+                    className="flex justify-center items-center w-8 h-8 p-0"
                   >
-                    {!loading && <SaveFilled className="text-xl -mx-2" />}
+                    {!loading && <SaveFilled className="text-xl" />}
                   </Button>
                 </Tooltip>
                 <Tooltip title="Batal" color="red">
                   <Button
                     danger
-                    onClick={() => { 
-                      onCancel(); 
+                    onClick={() => {
+                      onCancel();
                       resetFormError()
-                      }}
+                    }}
                     loading={loading}
+                    className="flex justify-center items-center w-8 h-8 p-0"
                   >
-                    {!loading && <CloseSquareFilled className="text-xl -mx-2" />}
+                    {!loading && <CloseSquareFilled className="text-xl" />}
                   </Button>
                 </Tooltip>
               </Space>
             ) : (
-                <Space className="flex justify-items-center">
-                  <Tooltip
-                    title="Edit" 
-                    color="cyan">
-                    <Button
-                      onClick={() => { 
-                        onEdit( record ); 
-                        resetFormError()
-                      }}
-                      loading={loading}
-                      color="cyan"
-                      variant="outlined"
-                    >
-                      {!loading && <EditFilled className="text-xl -mx-2" />}
-                    </Button>
-                  </Tooltip>
-                  <Tooltip
-                    title="Hapus"
-                    color="red">
-                    <Button
-                      danger
-                      onClick={() => {
-                        onDelete( record.id )
-                        resetFormError()
-                      }}
-                      loading={loading}
-                    >
-                      {!loading && <DeleteFilled className="text-xl -mx-2" />}
-                    </Button>
-                  </Tooltip>
-                </Space>
+              <Space className="flex justify-center">
+                <Tooltip
+                  title="Edit"
+                  color="cyan">
+                  <Button
+                    onClick={() => {
+                      onEdit(record);
+                      resetFormError()
+                    }}
+                    loading={loading}
+                    color="cyan"
+                    variant="outlined"
+                    className="flex justify-center items-center w-8 h-8 p-0"
+                  >
+                    {!loading && <EditFilled className="text-xl" />}
+                  </Button>
+                </Tooltip>
+                <Tooltip
+                  title="Hapus"
+                  color="red">
+                  <Button
+                    danger
+                    onClick={() => {
+                      onDelete(record.id)
+                      resetFormError()
+                    }}
+                    loading={loading}
+                    className="flex justify-center items-center w-8 h-8 p-0"
+                  >
+                    {!loading && <DeleteFilled className="text-xl" />}
+                  </Button>
+                </Tooltip>
+              </Space>
             )
           }
         />
