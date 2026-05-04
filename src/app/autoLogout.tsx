@@ -2,16 +2,19 @@
 
 import { useSession, signOut } from "next-auth/react";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import toast from "react-hot-toast";
 
 export default function AutoLogout() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/auth/login");
+      if (!["/login", "/register"].includes(pathname as string)) {
+        router.push("/login");
+      }
       return;
     }
 
@@ -23,21 +26,21 @@ export default function AutoLogout() {
 
     if (timeUntilExpiration <= 0) {
       toast.dismiss();
-      toast( "Sesi telah berakhir" );
+      toast("Sesi telah berakhir");
 
       setTimeout(() => {
-        signOut({callbackUrl: "/auth/login"});
-        router.push( "/auth/login" );
+        signOut({ callbackUrl: "/login" });
+        router.push("/login");
       }, 3000);
     }
 
     const timeout = setTimeout(() => {
       toast.dismiss();
-      toast( "Sesi telah berakhir" );
+      toast("Sesi telah berakhir");
 
       setTimeout(() => {
-        signOut({callbackUrl: "/auth/login"});
-        router.push( "/auth/login" );
+        signOut({ callbackUrl: "/login" });
+        router.push("/login");
       }, 3000);
     }, timeUntilExpiration);
 

@@ -32,7 +32,7 @@ export const ScheduleForm = ({ addSchedule, loading, form }: ScheduleFormProps) 
   }, [addSchedule, form]);
 
   return (
-    <Form form={form} layout="vertical">
+    <Form form={form} layout="vertical" className="w-full max-w-md mx-auto">
       <div className="flex justify-between -mb-6">
         <Form.Item
           name="date"
